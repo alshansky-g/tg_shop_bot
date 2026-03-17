@@ -117,7 +117,6 @@ async def orm_add_user(
         user = User(id=user_id, first_name=first_name, last_name=last_name, phone=phone)
         user.cart = Cart(id=user_id)
         session.add(user)
-        # await session.commit()
 
 
 # Работа с корзиной
@@ -158,9 +157,9 @@ async def decrease_items_in_cart(session: AsyncSession, user_id: int, product_id
             CartProduct.cart_id == user_id, CartProduct.product_id == product_id
         )
     )
-    quantity = product.quantity - 1
     if product is None:
         return
+    quantity = product.quantity - 1
     if product.quantity > 1:
         product.quantity -= 1
     else:
