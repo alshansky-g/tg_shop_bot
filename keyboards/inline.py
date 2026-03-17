@@ -31,7 +31,7 @@ main_menu_kb = (
         [
             [
                 InlineKeyboardButton(
-                    text='Товары 🍕',
+                    text='Товары 🛍️',
                     callback_data=MenuCallback(level=1, menu_name='Категории').pack(),
                 ),
                 InlineKeyboardButton(
