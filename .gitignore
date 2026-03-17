@@ -3,3 +3,6 @@ __pycache__
 .vscode
 .venv
 sandbox.py
+*.db
+*.pyc
+
