@@ -5,7 +5,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardRemove
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.crud import (
+from bot.database.crud import (
     orm_add_product,
     orm_change_banner_image,
     orm_delete_product,
@@ -15,10 +15,10 @@ from database.crud import (
     orm_get_products,
     orm_update_product,
 )
-from filters.custom import ChatTypeFilter, IsAdmin
-from keyboards.inline import get_inline_kbd
-from keyboards.reply import get_keyboard
-from utils.logging_config import logger
+from bot.filters.custom import ChatTypeFilter, IsAdmin
+from bot.keyboards.inline import get_inline_kbd
+from bot.keyboards.reply import get_keyboard
+from bot.utils.logging_config import logger
 
 router = Router()
 router.message.filter(ChatTypeFilter(chat_types=['private']), IsAdmin())

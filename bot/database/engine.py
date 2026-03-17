@@ -1,13 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from database.crud import (
+from bot.database.crud import (
     orm_add_banner_description,
     orm_create_categories,
     orm_seed_products,
 )
-from database.models import Base
-from utils.config import config
-from utils.db_texts import categories, info_pages_description, sample_products
+from bot.database.models import Base
+from bot.utils.config import config
+from bot.utils.db_texts import categories, info_pages_description, sample_products
 
 engine = create_async_engine(url=config.database_url, echo=True)
 session_maker = async_sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)

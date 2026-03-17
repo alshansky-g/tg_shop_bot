@@ -4,14 +4,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from database.engine import create_db, session_maker
-from handlers.admin_private import router as admin_router
-from handlers.user_group import router as user_group_router
-from handlers.user_private import router as user_private_router
-from middlewares.db import DataBaseSession
-from utils.bot_commands import commands
-from utils.config import config
-from utils.logging_config import logger
+from bot.database.engine import create_db, session_maker
+from bot.handlers.admin_private import router as admin_router
+from bot.handlers.user_group import router as user_group_router
+from bot.handlers.user_private import router as user_private_router
+from bot.middlewares.db import DataBaseSession
+from bot.utils.bot_commands import commands
+from bot.utils.config import config
+from bot.utils.logging_config import logger
 
 bot = Bot(token=config.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
@@ -28,7 +28,7 @@ async def on_startup():
 
 
 async def on_shutdown():
-    logger.debug("Бот остановлен")
+    logger.debug('Бот остановлен')
 
 
 async def main():
@@ -41,5 +41,5 @@ async def main():
     )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())

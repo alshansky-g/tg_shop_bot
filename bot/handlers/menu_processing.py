@@ -3,11 +3,11 @@
 from aiogram.types import BufferedInputFile, CallbackQuery, InputMediaPhoto
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database import crud
-from database.models import Product
-from keyboards import inline
-from utils.paginator import Paginator
-from utils.placeholder import create_placeholder_png
+from bot.database import crud
+from bot.database.models import Product
+from bot.keyboards import inline
+from bot.utils.paginator import Paginator
+from bot.utils.placeholder import create_placeholder_png
 
 PLACEHOLDER = 'placeholder'
 

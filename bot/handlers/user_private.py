@@ -5,9 +5,9 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from filters.custom import ChatTypeFilter
-from handlers.menu_processing import get_menu_content, process_cart_actions
-from keyboards.inline import MenuCallback
+from bot.filters.custom import ChatTypeFilter
+from bot.handlers.menu_processing import get_menu_content, process_cart_actions
+from bot.keyboards.inline import MenuCallback
 
 router = Router()
 router.message.filter(ChatTypeFilter(chat_types=['private']))

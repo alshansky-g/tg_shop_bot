@@ -2,7 +2,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from database.models import Banner, Cart, CartProduct, Category, Product, User
+from bot.database.models import Banner, Cart, CartProduct, Category, Product, User
 
 
 # Баннеры

@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from math import ceil
 
-from database.models import Product
+from bot.database.models import Product
 
 
 class Paginator:

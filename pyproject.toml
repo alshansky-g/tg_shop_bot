@@ -11,6 +11,9 @@ dependencies = [
     "loguru>=0.7",
 ]
 
+[project.scripts]
+tg-shop-bot = "bot.__main__:main"
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
