@@ -39,13 +39,13 @@ main_menu_kb = (
                     callback_data=MenuCallback(level=3, menu_name='Корзина').pack(),
                 ),
                 InlineKeyboardButton(
-                    text='О нас ℹ️', callback_data=MenuCallback(level=0, menu_name='О нас').pack()
+                    text='О нас 💬', callback_data=MenuCallback(level=0, menu_name='О нас').pack()
                 ),
                 InlineKeyboardButton(
                     text='Оплата 💳', callback_data=MenuCallback(level=0, menu_name='Оплата').pack()
                 ),
                 InlineKeyboardButton(
-                    text='Доставка 🚗',
+                    text='Доставка 🚚',
                     callback_data=MenuCallback(level=0, menu_name='Доставка').pack(),
                 ),
             ]
@@ -63,7 +63,7 @@ def get_user_catalog_btns(
     keyboard = InlineKeyboardBuilder()
     keyboard.add(
         InlineKeyboardButton(
-            text='🔙Назад',
+            text='◀️ Назад',
             callback_data=MenuCallback(
                 level=level - 1, menu_name='Главная', category=categories[0].id
             ).pack(),
@@ -100,7 +100,7 @@ def get_products_btns(
     keyboard = InlineKeyboardBuilder()
     keyboard.add(
         InlineKeyboardButton(
-            text='🔙Назад',
+            text='◀️ Назад',
             callback_data=MenuCallback(
                 level=level - 1,
                 menu_name='Категории',
@@ -117,7 +117,7 @@ def get_products_btns(
     )
     keyboard.add(
         InlineKeyboardButton(
-            text='Добавить',
+            text='➕ В корзину',
             callback_data=MenuCallback(
                 level=level,
                 menu_name='add_to_cart',
@@ -159,7 +159,7 @@ def get_cart_buttons(*, level: int, page: int, pagination_btns: dict, product_id
     )
     keyboard.add(
         InlineKeyboardButton(
-            text='Удалить',
+            text='🗑 Удалить',
             callback_data=MenuCallback(
                 level=level, menu_name='delete', product_id=product_id, page=page
             ).pack(),
@@ -188,13 +188,13 @@ def get_cart_buttons(*, level: int, page: int, pagination_btns: dict, product_id
     keyboard = keyboard.row(*row)
     keyboard.row(
         InlineKeyboardButton(
-            text='🔙Назад',
+            text='◀️ Назад',
             callback_data=MenuCallback(
                 level=1, menu_name='Категории', page=page, product_id=product_id
             ).pack(),
         ),
         InlineKeyboardButton(
-            text='Заказать',
+            text='✅ Заказать',
             callback_data=MenuCallback(
                 level=3, menu_name='order', page=page, product_id=product_id
             ).pack(),
