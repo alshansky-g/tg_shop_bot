@@ -43,6 +43,31 @@ async def orm_get_categories(session: AsyncSession):
     return categories.all()
 
 
+async def orm_seed_products(
+    session: AsyncSession,
+    products: list[tuple[str, str, float, str]],
+    placeholder_image: str,
+):
+    existing = await session.scalar(select(Product))
+    if existing is not None:
+        return
+    category_map = {c.name: c.id for c in (await session.scalars(select(Category))).all()}
+    session.add_all(
+        [
+            Product(
+                name=name,
+                description=description,
+                price=price,
+                image=placeholder_image,
+                category_id=category_map[category_name],
+            )
+            for name, description, price, category_name in products
+            if category_name in category_map
+        ]
+    )
+    await session.commit()
+
+
 # Админка Товары
 async def orm_add_product(session: AsyncSession, product_fields: dict):
     product = Product(**product_fields)

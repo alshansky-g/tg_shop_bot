@@ -7,10 +7,11 @@ from database.crud import (
     orm_change_banner_image,
     orm_create_categories,
     orm_get_info_pages,
+    orm_seed_products,
 )
 from database.models import Base
 from utils.config import config
-from utils.db_texts import categories, info_pages_description
+from utils.db_texts import categories, info_pages_description, sample_products
 from utils.placeholder import create_placeholder_png
 
 engine = create_async_engine(url=config.database_url, echo=True)
@@ -26,13 +27,18 @@ async def create_db():
         await orm_add_banner_description(session, info_pages_description)
 
 
-async def seed_banner_images(bot: Bot):
-    """Upload a placeholder image to Telegram for all banners that have no image yet.
-    Runs once on first startup; subsequent runs are no-ops."""
+async def seed_initial_data(bot: Bot):
+    """Upload a placeholder image and seed banners + demo products on first startup.
+    Subsequent runs are no-ops if data already exists."""
     async with session_maker() as session:
         banners = await orm_get_info_pages(session)
-        missing = [b for b in banners if not b.image]
-        if not missing:
+        missing_banners = [b for b in banners if not b.image]
+
+        from database.models import Product
+        from sqlalchemy import select
+        has_products = await session.scalar(select(Product))
+
+        if not missing_banners and has_products is not None:
             return
 
         admin_id = config.admins_list[0]
@@ -40,13 +46,15 @@ async def seed_banner_images(bot: Bot):
         msg = await bot.send_photo(
             chat_id=admin_id,
             photo=BufferedInputFile(png, filename='default_banner.png'),
-            caption='🖼 Дефолтные баннеры установлены. Замените через /admin → «Добавить/изменить баннер»',
+            caption='🖼 Стартовые данные загружены. Замените баннеры и товары через /admin.',
             disable_notification=True,
         )
         file_id = msg.photo[-1].file_id  # type: ignore[index]
 
-        for banner in missing:
+        for banner in missing_banners:
             await orm_change_banner_image(session, banner.name, file_id)
+
+        await orm_seed_products(session, sample_products, file_id)
 
 
 async def drop_db():
