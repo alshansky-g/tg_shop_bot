@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from database.engine import create_db, seed_initial_data, session_maker
+from database.engine import create_db, session_maker
 from handlers.admin_private import router as admin_router
 from handlers.user_group import router as user_group_router
 from handlers.user_private import router as user_private_router
@@ -24,7 +24,6 @@ dp.include_router(user_group_router)
 
 async def on_startup():
     await create_db()
-    await seed_initial_data(bot)
     await bot.set_my_commands(commands)
 
 
