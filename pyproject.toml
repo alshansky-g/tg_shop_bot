@@ -1,0 +1,24 @@
+[project]
+name = "tg-shop-bot"
+version = "0.1.0"
+description = "Telegram shop bot built with aiogram 3 and PostgreSQL"
+requires-python = ">=3.13"
+dependencies = [
+    "aiogram>=3.7",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg>=0.29",
+    "pydantic-settings>=2.0",
+    "loguru>=0.7",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["F401", "F841"]
+preview = true
