@@ -4,7 +4,7 @@ categories = ['Еда', 'Напитки']
 
 info_pages_description = {
     'Главная': 'Добро пожаловать',
-    'О нас': "Пиццерия 'У братишки'\nРежим работы - 24/7",
+    'О нас': "Онлайн-шоп 'Buy From Us'\nРежим работы - 24/7",
     'Оплата': as_marked_section(
         Bold('Варианты оплаты:'),
         'Картой в боте',
@@ -12,8 +12,8 @@ info_pages_description = {
         'В заведении',
         marker='✅ ',
     ).as_html(),
-    'shipping': as_list(
-        as_marked_section(Bold('Варианты доставки^'), 'Курьер', 'Самовынос', marker='✅ '),
+    'Доставка': as_list(
+        as_marked_section(Bold('Варианты доставки^'), 'Курьер', 'Самовывоз', marker='✅ '),
         as_marked_section(Bold('Нельзя:'), 'Почта', 'Голуби', marker='❌ '),
         sep='\n-------------------------------\n',
     ).as_html(),

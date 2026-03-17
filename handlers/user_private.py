@@ -1,7 +1,7 @@
 """Module for user handlers."""
 
 from aiogram import Router
-from aiogram.filters import CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +17,30 @@ router.message.filter(ChatTypeFilter(chat_types=['private']))
 async def start_cmd(message: Message, session: AsyncSession):
     """Start command handler."""
     media, reply_markup = await get_menu_content(session, level=0, menu_name='Главная')
+    await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
+
+
+@router.message(Command('menu'))
+async def menu_cmd(message: Message, session: AsyncSession):
+    media, reply_markup = await get_menu_content(session, level=1, menu_name='Категории')
+    await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
+
+
+@router.message(Command('about'))
+async def about_cmd(message: Message, session: AsyncSession):
+    media, reply_markup = await get_menu_content(session, level=0, menu_name='О нас')
+    await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
+
+
+@router.message(Command('payment'))
+async def payment_cmd(message: Message, session: AsyncSession):
+    media, reply_markup = await get_menu_content(session, level=0, menu_name='Оплата')
+    await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
+
+
+@router.message(Command('shipping'))
+async def shipping_cmd(message: Message, session: AsyncSession):
+    media, reply_markup = await get_menu_content(session, level=0, menu_name='Доставка')
     await message.answer_photo(media.media, caption=media.caption, reply_markup=reply_markup)
 
 
