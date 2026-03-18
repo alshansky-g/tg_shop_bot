@@ -6,6 +6,7 @@ from aiogram.types import BufferedInputFile, ReplyKeyboardRemove
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.database.crud import (
+    orm_add_category,
     orm_add_product,
     orm_change_banner_image,
     orm_delete_product,
@@ -55,14 +56,9 @@ class AddBanner(StatesGroup):
     image = State()
 
 
-@router.message(StateFilter(None), F.text == 'Добавить/изменить баннер')
-async def add_banner_image(message: types.Message, state: FSMContext, session: AsyncSession):
-    page_names = [page.name for page in await orm_get_info_pages(session)]
-    await message.answer(
-        'Отправьте изображение баннера.\nВ описании укажите, для какой страницы:'
-        f'\n{", ".join(page_names)}'
-    )
-    await state.set_state(AddBanner.image)
+class Categories(StatesGroup):
+    add = State()
+    delete = State()
 
 
 @router.message(StateFilter('*'), Command('cancel'))
@@ -73,6 +69,41 @@ async def cancel_handler(message: types.Message, state: FSMContext):
         return
     await state.clear()
     await message.answer('Действия отменены', reply_markup=ADMIN_KB)
+
+
+@router.message(F.text == 'Редактировать категории')
+async def edit_categories(message: types.Message):
+    await message.answer(
+        text='Выберите действие:',
+        reply_markup=get_inline_kbd(
+            buttons={'Добавить категорию': 'add_category', 'Удалить категорию': 'delete_category'}
+        ),
+    )
+
+
+@router.callback_query(F.data == 'add_category')
+async def get_category_name(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.answer(text='Введите название новой категории. Отмена: /cancel')
+    await callback.answer()
+    await state.set_state(Categories.add)
+
+
+@router.message(Categories.add, F.text)
+async def add_category(message: types.Message, state: FSMContext, session: AsyncSession):
+    await orm_add_category(session, message.text)
+    await message.answer(text='Категория добавлена')
+    await state.clear()
+
+
+
+@router.message(StateFilter(None), F.text == 'Добавить/изменить баннер')
+async def add_banner_image(message: types.Message, state: FSMContext, session: AsyncSession):
+    page_names = [page.name for page in await orm_get_info_pages(session)]
+    await message.answer(
+        'Отправьте изображение баннера.\nВ описании укажите, для какой страницы:'
+        f'\n{", ".join(page_names)}'
+    )
+    await state.set_state(AddBanner.image)
 
 
 @router.message(AddBanner.image, F.photo)

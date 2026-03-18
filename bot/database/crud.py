@@ -43,6 +43,11 @@ async def orm_get_categories(session: AsyncSession):
     return categories.all()
 
 
+async def orm_add_category(session: AsyncSession, category_name: str):
+    session.add(Category(name=category_name))
+    await session.commit()
+
+
 async def orm_seed_products(
     session: AsyncSession,
     products: list[tuple[str, str, float, str]],
