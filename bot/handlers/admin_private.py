@@ -2,7 +2,7 @@ from aiogram import F, Router, types
 from aiogram.filters import Command, StateFilter, or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import ReplyKeyboardRemove
+from aiogram.types import BufferedInputFile, ReplyKeyboardRemove
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.database.crud import (
@@ -19,15 +19,16 @@ from bot.filters.custom import ChatTypeFilter, IsAdmin
 from bot.keyboards.inline import get_inline_kbd
 from bot.keyboards.reply import get_keyboard
 from bot.utils.logging_config import logger
+from bot.utils.placeholder import create_placeholder_png
 
 router = Router()
 router.message.filter(ChatTypeFilter(chat_types=['private']), IsAdmin())
 
 
 ADMIN_KB = get_keyboard(
-    'Добавить категорию',
+    'Редактировать категории',
+    'Редактировать товары',
     'Добавить товар',
-    'Ассортимент',
     'Добавить/изменить баннер',
     placeholder='Выберите действие',
     adjust_values=(2, 2),
@@ -64,6 +65,16 @@ async def add_banner_image(message: types.Message, state: FSMContext, session: A
     await state.set_state(AddBanner.image)
 
 
+@router.message(StateFilter('*'), Command('cancel'))
+@router.message(StateFilter('*'), F.text.casefold() == 'отмена')
+async def cancel_handler(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.clear()
+    await message.answer('Действия отменены', reply_markup=ADMIN_KB)
+
+
 @router.message(AddBanner.image, F.photo)
 async def add_banner(message: types.Message, state: FSMContext, session: AsyncSession):
     image_id = message.photo[-1].file_id
@@ -81,9 +92,9 @@ async def add_banner(message: types.Message, state: FSMContext, session: AsyncSe
     await state.clear()
 
 
-@router.message(AddBanner.image, ~(F.text.lower() == 'отмена'))
+@router.message(AddBanner.image, ~F.photo)
 async def add_banner_fallback(message: types.Message):
-    await message.answer('Попробуйте отправить изображение снова')
+    await message.answer('Попробуйте отправить изображение снова. Выйти: /cancel')
 
 
 @router.message(Command('admin'))
@@ -91,7 +102,7 @@ async def add_product(message: types.Message):
     await message.answer('Что хотите сделать?', reply_markup=ADMIN_KB)
 
 
-@router.message(F.text == 'Ассортимент')
+@router.message(F.text == 'Редактировать товары')
 async def choose_category(message: types.Message, session: AsyncSession):
     categories = await orm_get_categories(session)
     buttons = {category.name: f'category_{category.id}' for category in categories}
@@ -103,17 +114,27 @@ async def get_products(callback: types.CallbackQuery, session: AsyncSession):
     category_id = int(callback.data.split('_')[-1])
     await callback.message.answer(text='Список товаров:')
     for product in await orm_get_products(session, category_id):
-        await callback.message.answer_photo(
-            product.image,
-            caption=f'<strong>{product.name}</strong>\n'
-            f'{product.description}\nСтоимость: {product.price}',
-            reply_markup=get_inline_kbd(
-                buttons={
-                    'Изменить': f'update_{product.id}',
-                    'Удалить': f'delete_{product.id}',
-                }
-            ),
+        caption = (
+            f'<strong>{product.name}</strong>\n{product.description}\nСтоимость: {product.price}'
         )
+        keyboard = get_inline_kbd(
+            buttons={
+                'Изменить': f'update_{product.id}',
+                'Удалить': f'delete_{product.id}',
+            }
+        )
+        await callback.answer()
+        if product.image and product.image != 'placeholder':
+            await callback.message.answer_photo(
+                product.image, caption=caption, reply_markup=keyboard
+            )
+        else:
+            png = create_placeholder_png()
+            await callback.message.answer_photo(
+                BufferedInputFile(png, filename='product.png'),
+                caption=caption,
+                reply_markup=keyboard,
+            )
 
 
 @router.callback_query(StateFilter(None), F.data.startswith('update_'))
@@ -140,22 +161,14 @@ async def create_product(message: types.Message, state: FSMContext):
     await state.set_state(AddProduct.name)
 
 
-@router.message(StateFilter('*'), Command('отмена'))
-@router.message(StateFilter('*'), F.text.casefold() == 'отмена')
-async def cancel_handler(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state is None:
-        return
-    await state.clear()
-    await message.answer('Действия отменены', reply_markup=ADMIN_KB)
-
-
 @router.message(StateFilter('*'), Command('назад'))
 @router.message(StateFilter('*'), F.text.casefold() == 'назад')
 async def back_handler(message: types.Message, state: FSMContext, session: AsyncSession):
     current_state = await state.get_state()
     if current_state == AddProduct.name:
-        await message.answer('Предыдущего шага нет. Введите название товара или напишите "отмена"')
+        await message.answer(
+            'Предыдущего шага нет. Введите название товара или отмените действие: /cancel'
+        )
         return
     elif current_state == AddProduct.price:
         await state.set_state(AddProduct.category)

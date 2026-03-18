@@ -1,23 +1,8 @@
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy import ForeignKey, Numeric, String, Text
 from sqlalchemy.ext.associationproxy import association_proxy
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-class Base(DeclarativeBase):
-    created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[DateTime] = mapped_column(
-        DateTime, server_default=func.now(), onupdate=func.now()
-    )
-
-    def __repr__(self):
-        fields = ', '.join(
-            [
-                f'{k}={v}'
-                for k, v in self.__dict__.items()
-                if not any(k.startswith(prefix) for prefix in ['_', 'cr', 'up'])
-            ]
-        )
-        return f'<{type(self).__name__}: {fields}>'
+from bot.database.base import Base
 
 
 class Banner(Base):

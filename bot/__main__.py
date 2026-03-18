@@ -4,10 +4,9 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from bot.database.engine import create_db, session_maker
-from bot.handlers.admin_private import router as admin_router
-from bot.handlers.user_group import router as user_group_router
-from bot.handlers.user_private import router as user_private_router
+from bot.database.base import session_maker
+from bot.database.fixture import create_db, drop_db
+from bot.handlers import router
 from bot.middlewares.db import DataBaseSession
 from bot.utils.bot_commands import commands
 from bot.utils.config import config
@@ -17,9 +16,7 @@ bot = Bot(token=config.bot_token, default=DefaultBotProperties(parse_mode=ParseM
 
 dp = Dispatcher()
 dp.update.middleware(DataBaseSession(session_maker))
-dp.include_router(admin_router)
-dp.include_router(user_private_router)
-dp.include_router(user_group_router)
+dp.include_router(router)
 
 
 async def on_startup():
@@ -28,6 +25,7 @@ async def on_startup():
 
 
 async def on_shutdown():
+    await drop_db()
     logger.debug('Бот остановлен')
 
 
