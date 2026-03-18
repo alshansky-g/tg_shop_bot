@@ -2,6 +2,8 @@
 from aiogram.filters import Filter
 from aiogram.types import Message
 
+from bot.logging_config import logger
+
 
 class ChatTypeFilter(Filter):
     """Filters different chat scopes."""
@@ -16,5 +18,6 @@ class IsAdmin(Filter):
     """Checks if user is admin."""
     async def __call__(self, message: Message, admins_list: list[int]) -> bool:
         if message.from_user:
+            logger.debug(admins_list)
             return message.from_user.id in admins_list
         return False
