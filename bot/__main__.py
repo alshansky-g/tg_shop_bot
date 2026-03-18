@@ -4,13 +4,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
+from bot.config import config
 from bot.database.base import session_maker
 from bot.database.fixture import create_db, drop_db
 from bot.handlers import router
+from bot.logging_config import logger
 from bot.middlewares.db import DataBaseSession
 from bot.utils.bot_commands import commands
-from bot.utils.config import config
-from bot.utils.logging_config import logger
 
 bot = Bot(token=config.bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 

@@ -18,7 +18,7 @@ from bot.database.crud import (
 from bot.filters.custom import ChatTypeFilter, IsAdmin
 from bot.keyboards.inline import get_inline_kbd
 from bot.keyboards.reply import get_keyboard
-from bot.utils.logging_config import logger
+from bot.logging_config import logger
 from bot.utils.placeholder import create_placeholder_png
 
 router = Router()

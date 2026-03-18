@@ -2,7 +2,7 @@ from aiogram import Bot, Router, types
 from aiogram.filters import Command
 
 from bot.filters.custom import ChatTypeFilter
-from bot.utils.logging_config import logger
+from bot.logging_config import logger
 
 router = Router()
 router.message.filter(ChatTypeFilter(chat_types=['group', 'supergroup']))
