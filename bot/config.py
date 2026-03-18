@@ -5,7 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Config(BaseSettings):
     database_url: str = ''
     bot_token: str = ''
-    admins_list: list[int] = Field(default_factory=list)
+    admins_list: set[int] = Field(default_factory=set)
+    log_level: str = ''
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

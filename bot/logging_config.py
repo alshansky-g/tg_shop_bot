@@ -4,6 +4,8 @@ import sys
 
 from loguru import logger
 
+from bot.config import config
+
 
 class InterceptHandler(logging.Handler):
     def emit(self, record):
@@ -27,6 +29,6 @@ logging.getLogger('aiogram').setLevel(logging.INFO)
 logger.remove()
 logger.add(
     sys.stderr,
-    level='DEBUG',
+    level=config.log_level,
     format='<g>{time:HH:mm:ss}</> | <level>{level}</> | <c>{module}</> | <level>{message}</>',
 )
