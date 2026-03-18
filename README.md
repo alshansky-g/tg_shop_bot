@@ -119,10 +119,10 @@ tg_shop_bot/
     │   └── db.py                 # Инъекция сессии БД в хэндлеры
     ├── filters/
     │   └── custom.py             # ChatTypeFilter, IsAdmin
+    ├── config.py                 # Конфигурация через pydantic-settings
+    ├── logging_config.py         # Настройка loguru
     └── utils/
-        ├── config.py             # Конфигурация через pydantic-settings
         ├── db_texts.py           # Начальные данные для БД
-        ├── logging_config.py     # Настройка loguru
         ├── paginator.py          # Пагинация
         ├── placeholder.py        # Генерация PNG-заглушек без внешних зависимостей
         └── bot_commands.py       # Команды бота
