@@ -9,6 +9,7 @@ from bot.database.crud import (
     orm_add_category,
     orm_add_product,
     orm_change_banner_image,
+    orm_delete_category,
     orm_delete_product,
     orm_get_categories,
     orm_get_info_pages,
@@ -94,6 +95,28 @@ async def add_category(message: types.Message, state: FSMContext, session: Async
     await message.answer(text='Категория добавлена')
     await state.clear()
 
+
+@router.callback_query(F.data == 'delete_category')
+async def show_categories_to_delete(
+    callback: types.CallbackQuery, state: FSMContext, session: AsyncSession
+):
+    categories = await orm_get_categories(session)
+    logger.debug(categories)
+    await callback.message.edit_text(
+        text='Отмена: /cancel\nВыберите удаляемую категорию:',
+        reply_markup=get_inline_kbd(
+            buttons={category.name: str(category.id) for category in categories}
+        ),
+    )
+    await state.set_state(Categories.delete)
+
+
+@router.callback_query(Categories.delete)
+async def delete_category(callback: types.CallbackQuery, state: FSMContext, session: AsyncSession):
+    await orm_delete_category(session, int(callback.data))
+    await callback.message.edit_text(text='Категория удалена')
+    await callback.answer()
+    await state.clear()
 
 
 @router.message(StateFilter(None), F.text == 'Добавить/изменить баннер')

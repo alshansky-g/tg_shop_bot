@@ -39,12 +39,22 @@ async def orm_create_categories(session: AsyncSession, categories: list):
 
 
 async def orm_get_categories(session: AsyncSession):
-    categories = await session.scalars(select(Category))
+    categories = await session.scalars(select(Category).where(Category.is_active))
     return categories.all()
 
 
 async def orm_add_category(session: AsyncSession, category_name: str):
-    session.add(Category(name=category_name))
+    category = await session.execute(select(Category).where(Category.name == category_name))
+    if (category := category.scalar_one_or_none()):
+        category.is_active = True
+    else:
+        session.add(Category(name=category_name))
+    await session.commit()
+
+
+async def orm_delete_category(session: AsyncSession, category_id: int):
+    category = await session.get(Category, category_id)
+    category.is_active = False
     await session.commit()
 
 
