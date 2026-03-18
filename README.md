@@ -22,6 +22,10 @@
 - Управление изображениями и описаниями информационных страниц
 - Пошаговая FSM-форма для создания товара прямо в чате
 
+**Использование в группах:**
+- Бот можно добавить в группу
+- Команда `/admin` в группе обновляет список администраторов бота, подтягивая актуальных администраторов чата
+
 ## Стек
 
 | Компонент | Технология |
@@ -55,7 +59,7 @@ cp .env.example .env
 # Заполните BOT_TOKEN и DATABASE_URL в .env (localhost вместо db)
 
 uv sync
-uv run python app.py
+uv run python -m bot
 ```
 
 ### Вариант 3: pip (локально)
@@ -69,7 +73,7 @@ cp .env.example .env
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install .
-python app.py
+python -m bot
 ```
 
 ## Переменные окружения
@@ -85,37 +89,41 @@ python app.py
 | `POSTGRES_PASSWORD` | Пароль PostgreSQL (для docker-compose) | `password` |
 | `POSTGRES_DB` | Имя базы данных (для docker-compose) | `shop_db` |
 
-> При использовании docker-compose в `DATABASE_URL` укажите `@db:5432` вместо `@localhost:5432`
+> При использовании docker-compose `DATABASE_URL` переопределяется автоматически — вручную менять не нужно.
 
 ## Структура проекта
 
 ```
 tg_shop_bot/
-├── app.py                    # Точка входа
-├── pyproject.toml            # Зависимости (uv/pip)
+├── pyproject.toml
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .env.example
-├── database/
-│   ├── models.py             # SQLAlchemy ORM-модели
-│   ├── engine.py             # Подключение к БД, инициализация
-│   └── crud.py               # CRUD-операции
-├── handlers/
-│   ├── admin_private.py      # Управление товарами и баннерами
-│   ├── user_private.py       # Старт, главное меню
-│   ├── menu_processing.py    # Логика навигации по меню
-│   └── user_group.py         # Модерация в группах
-├── keyboards/
-│   ├── inline.py             # Inline-кнопки (MenuCallback)
-│   └── reply.py              # Reply-клавиатуры
-├── middlewares/
-│   └── db.py                 # Инъекция сессии БД
-├── filters/
-│   └── custom.py             # Фильтры (тип чата, роль админа)
-└── utils/
-    ├── config.py             # Конфигурация через pydantic-settings
-    ├── db_texts.py           # Начальные данные для БД (категории, страницы)
-    ├── logging_config.py     # Настройка loguru
-    ├── paginator.py          # Пагинация товаров
-    └── bot_commands.py       # Команды бота
+└── bot/
+    ├── __main__.py               # Точка входа (python -m bot)
+    ├── database/
+    │   ├── base.py               # engine, session_maker, Base (created_at/updated_at)
+    │   ├── models.py             # SQLAlchemy ORM-модели
+    │   ├── crud.py               # CRUD-операции
+    │   └── fixture.py            # create_db() / drop_db()
+    ├── handlers/
+    │   ├── __init__.py           # Сборка всех роутеров в один
+    │   ├── admin_private.py      # FSM-форма добавления/редактирования товаров и баннеров
+    │   ├── user_private.py       # /start, навигация по inline-меню
+    │   ├── menu_processing.py    # Логика уровней меню (0-3)
+    │   └── user_group.py         # /admin в группе — синхронизация списка админов
+    ├── keyboards/
+    │   ├── inline.py             # MenuCallback, inline-кнопки
+    │   └── reply.py              # Reply-клавиатуры
+    ├── middlewares/
+    │   └── db.py                 # Инъекция сессии БД в хэндлеры
+    ├── filters/
+    │   └── custom.py             # ChatTypeFilter, IsAdmin
+    └── utils/
+        ├── config.py             # Конфигурация через pydantic-settings
+        ├── db_texts.py           # Начальные данные для БД
+        ├── logging_config.py     # Настройка loguru
+        ├── paginator.py          # Пагинация
+        ├── placeholder.py        # Генерация PNG-заглушек без внешних зависимостей
+        └── bot_commands.py       # Команды бота
 ```
