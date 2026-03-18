@@ -25,11 +25,12 @@ router.message.filter(ChatTypeFilter(chat_types=['private']), IsAdmin())
 
 
 ADMIN_KB = get_keyboard(
+    'Добавить категорию',
     'Добавить товар',
     'Ассортимент',
     'Добавить/изменить баннер',
     placeholder='Выберите действие',
-    adjust_values=(2, 1),
+    adjust_values=(2, 2),
 )
 
 
