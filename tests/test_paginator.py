@@ -5,12 +5,12 @@ from bot.utils.paginator import Paginator
 
 @pytest.fixture
 def items():
-    return list(range(1, 11))  # [1, 2, ..., 10]
+    return list(range(1, 11))
 
 
 def test_pages_count(items):
     p = Paginator(items, per_page=3)
-    assert p.pages == 4  # ceil(10/3)
+    assert p.pages == 4
 
 
 def test_get_page_first(items):
@@ -20,7 +20,7 @@ def test_get_page_first(items):
 
 def test_get_page_last(items):
     p = Paginator(items, page=4, per_page=3)
-    assert p.get_page() == [10]  # последняя неполная страница
+    assert p.get_page() == [10]
 
 
 def test_has_next_true(items):
