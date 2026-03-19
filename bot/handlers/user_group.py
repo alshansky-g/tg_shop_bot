@@ -15,10 +15,14 @@ async def get_admins(message: types.Message, bot: Bot, admins_list: set[int], ow
     if not message.from_user or message.from_user.id != owner_id:
         return
 
+    bot_id = (await message.bot.get_me()).id
     chat_id = message.chat.id
     group_admins = await bot.get_chat_administrators(chat_id)
     new_admins = {
-        m.user.id for m in group_admins if m.status in ('creator', 'administrator')
+        m.user.id
+        for m in group_admins
+        if m.status in ('creator', 'administrator')
+        if not m.user.id == bot_id
     }
     admins_list.update(new_admins)
     for admin_id in admins_list:

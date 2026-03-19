@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.types import BotCommandScopeChat
+from aiogram.types import BotCommandScopeChat, ReplyKeyboardRemove
 
 from bot.config import config
 from bot.database.base import session_maker
@@ -35,6 +35,7 @@ async def on_shutdown():
         await bot.delete_my_commands(
             scope=BotCommandScopeChat(user_id=admin_id, chat_id=admin_id),
         )
+        await bot.send_message(admin_id, 'Бот остановлен', reply_markup=ReplyKeyboardRemove())
 
     logger.debug('Бот остановлен')
 
