@@ -138,5 +138,5 @@ async def get_menu_content(
         return await catalog(session, level, menu_name)
     elif level == 2:
         return await products(session, level, category, page)  # type: ignore[arg-type]
-    elif level == 3:
+    else:
         return await cart(session, level, user_id, page)  # type: ignore[arg-type]
