@@ -7,6 +7,7 @@ class Config(BaseSettings):
     bot_token: str = ''
     admins_list: set[int] = Field(default_factory=set)
     log_level: str = ''
+    payment_token: str = ''
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 

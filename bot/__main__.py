@@ -7,7 +7,7 @@ from aiogram.types import BotCommandScopeChat
 
 from bot.config import config
 from bot.database.base import session_maker
-from bot.database.fixture import create_db, drop_db
+from bot.database.fixture import create_db  # , drop_db
 from bot.handlers import router
 from bot.logging_config import logger
 from bot.middlewares.db import DataBaseSession
@@ -31,12 +31,15 @@ async def on_startup():
 
 
 async def on_shutdown():
-    await drop_db()
+    # await drop_db()
+    # logger.debug('БД удалена')
+
     for admin_id in config.admins_list:
         await bot.delete_my_commands(
             scope=BotCommandScopeChat(user_id=admin_id, chat_id=admin_id),
         )
         logger.debug(f'Админ клавиатура для {admin_id} удалена.')
+
     logger.debug('Бот остановлен')
 
 
@@ -46,7 +49,10 @@ async def main():
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(
-        bot, allowed_updates=dp.resolve_used_update_types(), admins_list=config.admins_list
+        bot,
+        allowed_updates=dp.resolve_used_update_types(),
+        admins_list=config.admins_list,
+        payment_token=config.payment_token,
     )
 
 

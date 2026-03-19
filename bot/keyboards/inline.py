@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from typing import cast
 
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -203,10 +204,12 @@ def get_cart_buttons(*, level: int, page: int, pagination_btns: dict, product_id
     return keyboard.as_markup()
 
 
-def get_inline_kbd(*, buttons: dict[str, str], adjust_values: tuple[int, ...] = (2,)):
+def get_inline_kbd(
+    *, buttons: dict[str, str], adjust_values: tuple[int, ...] = (2,)
+) -> InlineKeyboardMarkup:
     """Dynamically create inline buttons from dict."""
     keyboard = InlineKeyboardBuilder()
     for text, data in buttons.items():
         keyboard.add(InlineKeyboardButton(text=text, callback_data=data))
 
-    return keyboard.adjust(*adjust_values).as_markup()
+    return cast(InlineKeyboardMarkup, keyboard.adjust(*adjust_values).as_markup())
