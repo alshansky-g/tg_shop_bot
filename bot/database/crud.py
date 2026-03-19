@@ -45,7 +45,7 @@ async def orm_get_categories(session: AsyncSession):
 
 async def orm_add_category(session: AsyncSession, category_name: str):
     category = await session.execute(select(Category).where(Category.name == category_name))
-    if (category := category.scalar_one_or_none()):
+    if category := category.scalar_one_or_none():
         category.is_active = True
     else:
         session.add(Category(name=category_name))
@@ -164,6 +164,11 @@ async def orm_delete_from_cart(session: AsyncSession, user_id: int, product_id: 
     )
     await session.commit()
     return 0
+
+
+async def orm_clear_cart(session: AsyncSession, user_id: int):
+    await session.execute(delete(CartProduct).where(CartProduct.cart_id == user_id))
+    await session.commit()
 
 
 async def decrease_items_in_cart(session: AsyncSession, user_id: int, product_id: int):
