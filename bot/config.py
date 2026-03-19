@@ -6,6 +6,7 @@ class Config(BaseSettings):
     database_url: str = ''
     bot_token: str = ''
     admins_list: set[int] = Field(default_factory=set)
+    owner_id: int = 0
     log_level: str = ''
     payment_token: str = ''
 

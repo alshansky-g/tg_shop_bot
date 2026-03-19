@@ -11,20 +11,21 @@ router.message.filter(ChatTypeFilter(chat_types=['group', 'supergroup']))
 
 
 @router.message(Command('admin'))
-async def get_admins(message: types.Message, bot: Bot, admins_list: set[int]):
-    if message.from_user:
-        chat_id = message.chat.id
-        admins = await bot.get_chat_administrators(chat_id)
-        admins = [
-            member.user.id for member in admins if member.status in ('creator', 'administrator')
-        ]
-        admins_list.update(admins)
-        for admin_id in admins_list:
-            await message.bot.set_my_commands(
-                admin_commands + user_commands,
-                scope=BotCommandScopeChat(chat_id=admin_id, user_id=admin_id),
-            )
-        if message.from_user.id in admins_list:
-            await message.delete()
-            await message.answer(text='Список админов обновлен')
-        logger.debug(admins_list)
+async def get_admins(message: types.Message, bot: Bot, admins_list: set[int], owner_id: int):
+    if not message.from_user or message.from_user.id != owner_id:
+        return
+
+    chat_id = message.chat.id
+    group_admins = await bot.get_chat_administrators(chat_id)
+    new_admins = {
+        m.user.id for m in group_admins if m.status in ('creator', 'administrator')
+    }
+    admins_list.update(new_admins)
+    for admin_id in admins_list:
+        await message.bot.set_my_commands(
+            admin_commands + user_commands,
+            scope=BotCommandScopeChat(chat_id=admin_id, user_id=admin_id),
+        )
+    await message.delete()
+    await message.answer(text='Список админов обновлен')
+    logger.debug(admins_list)
