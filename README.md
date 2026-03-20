@@ -48,7 +48,7 @@
 ### Вариант 1: Docker Compose (рекомендуется)
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/alshansky-g/tg_shop_bot.git
 cd tg_shop_bot
 cp .env.example .env
 # Заполните BOT_TOKEN в .env
@@ -58,7 +58,7 @@ docker compose up --build
 ### Вариант 2: uv (локально)
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/alshansky-g/tg_shop_bot.git
 cd tg_shop_bot
 cp .env.example .env
 # Заполните BOT_TOKEN и DATABASE_URL в .env (localhost вместо db)
@@ -70,7 +70,7 @@ uv run python -m bot
 ### Вариант 3: pip (локально)
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/alshansky-g/tg_shop_bot.git
 cd tg_shop_bot
 cp .env.example .env
 # Заполните BOT_TOKEN и DATABASE_URL в .env
@@ -97,6 +97,25 @@ python -m bot
 | `POSTGRES_DB` | Имя базы данных (для docker-compose) | `shop_db` |
 
 > При использовании docker-compose `DATABASE_URL` переопределяется автоматически — вручную менять не нужно.
+
+## Тесты
+
+Проект покрыт 58 тестами (`pytest` + `pytest-asyncio`):
+
+| Модуль | Тип | Что проверяется |
+|--------|-----|-----------------|
+| `test_crud.py` | Интеграционные (SQLite in-memory) | CRUD-операции: товары, категории, баннеры, пользователи, корзина |
+| `test_paginator.py` | Юнит | Пагинация: страницы, переходы, граничные случаи |
+| `test_placeholder.py` | Юнит | Генерация PNG-заглушек: сигнатура, размеры, цвета |
+| `test_filters.py` | Юнит | Фильтры `ChatTypeFilter` и `IsAdmin` |
+
+```bash
+uv run pytest          # через uv
+# или
+pytest                 # если активировано venv
+```
+
+> CRUD-тесты не требуют запущенного PostgreSQL — используют SQLite in-memory.
 
 ## Структура проекта
 
