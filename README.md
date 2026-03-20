@@ -8,6 +8,12 @@
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00)
 ![uv](https://img.shields.io/badge/uv-package_manager-DE5FE9)
 
+## Демо
+
+| Старт | Каталог | Товар | Корзина |
+|:-----:|:-------:|:-----:|:-------:|
+| ![Старт](screenshots/screenshot_start.png) | ![Каталог](screenshots/screenshot_categories.png) | ![Товар](screenshots/screenshot_product.png) | ![Корзина](screenshots/screenshot_cart.png) |
+
 ## Возможности
 
 **Для покупателей:**
